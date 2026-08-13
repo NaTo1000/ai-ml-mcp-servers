@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "nlp-text-analysis": {
+      "command": "python",
+      "args": ["-m", "servers.nlp.text_analysis"]
+    },
+    "nlp-embeddings": {
+      "command": "python",
+      "args": ["-m", "servers.nlp.embeddings"]
+    },
+    "cv-vision": {
+      "command": "python",
+      "args": ["-m", "servers.cv.vision"]
+    },
+    "vector-chroma": {
+      "command": "python",
+      "args": ["-m", "servers.vector.chroma"]
+    },
+    "infer-local": {
+      "command": "python",
+      "args": ["-m", "servers.inference.local"],
+      "env": {
+        "OLLAMA_HOST": "http://localhost:11434"
+      }
+    },
+    "agent-tools": {
+      "command": "python",
+      "args": ["-m", "servers.agents.tools"]
+    },
+    "data-prep": {
+      "command": "python",
+      "args": ["-m", "servers.data.prep"]
+    },
+    "utils-hf-hub": {
+      "command": "python",
+      "args": ["-m", "servers.utils.hf_hub"],
+      "env": {
+        "HF_TOKEN": "${HF_TOKEN}"
+      }
+    }
+  }
+}
