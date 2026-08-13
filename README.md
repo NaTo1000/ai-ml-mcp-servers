@@ -6,7 +6,8 @@ Connect any MCP-compatible host (Claude Desktop, Cursor, VS Code, ChatGPT, Gemin
 
 > **Author**: [NaTo1000](https://github.com/NaTo1000) · BPB BLUEPRINTBOT PTY LTD  
 > **License**: MIT  
-> **Protocol**: [Model Context Protocol](https://modelcontextprotocol.io)
+> **Protocol**: [Model Context Protocol](https://modelcontextprotocol.io)  
+> **Hugging Face**: designed for publishing under `NaTo1000`
 
 ---
 
@@ -14,22 +15,24 @@ Connect any MCP-compatible host (Claude Desktop, Cursor, VS Code, ChatGPT, Gemin
 
 | Category | Server | Purpose | Key Tools |
 |----------|--------|---------|-----------|
-| **NLP** | `nlp-text-analysis` | Text classification, NER, sentiment, summarization | classify, extract_entities, sentiment, summarize |
-| **NLP** | `nlp-embeddings` | Sentence & document embeddings | embed_text, similarity, batch_embed |
-| **CV** | `cv-vision` | Image classification, detection, segmentation | classify_image, detect_objects, segment |
-| **CV** | `cv-ocr` | OCR & document understanding | ocr_image, extract_tables, layout_analysis |
-| **Multimodal** | `mm-vlm` | Vision-Language models | caption, vqa, image_text_match |
-| **Multimodal** | `mm-diffusion` | Image / video generation | generate_image, img2img, inpaint |
-| **Audio** | `audio-speech` | ASR, TTS, audio classification | transcribe, synthesize, classify_audio |
-| **Training** | `train-hf` | Hugging Face Trainer & fine-tuning helpers | prepare_dataset, train_lora, evaluate |
-| **Inference** | `infer-local` | Local model serving (Ollama / vLLM style) | list_models, generate, chat |
-| **Inference** | `infer-api` | Unified multi-provider inference | openai_chat, anthropic_chat, hf_inference |
-| **Vector** | `vector-chroma` | ChromaDB vector store | add_docs, query, delete, collection_stats |
-| **Vector** | `vector-faiss` | FAISS index management | build_index, search, save_index |
-| **Agents** | `agent-tools` | Agent orchestration helpers | plan, tool_router, memory_store |
-| **Data** | `data-prep` | Dataset loading & preprocessing | load_hf_dataset, split, tokenize |
-| **Utils** | `utils-metrics` | Evaluation metrics & logging | compute_bleu, compute_rouge, log_experiment |
-| **Utils** | `utils-hf-hub` | Hugging Face Hub operations | search_models, download_model, push_to_hub |
+| **NLP** | `nlp-text-analysis` | Text classification, NER, sentiment, summarization | `classify_text`, `extract_entities`, `sentiment_analysis`, `summarize`, `extract_keywords` |
+| **NLP** | `nlp-embeddings` | Sentence & document embeddings | `embed_text`, `batch_embed`, `cosine_similarity`, `semantic_search` |
+| **CV** | `cv-vision` | Image classification, detection, segmentation | `classify_image`, `detect_objects`, `segment_image`, `image_features` |
+| **CV** | `cv-ocr` | OCR & document understanding *(stub ready for expansion)* | `ocr_image`, `extract_tables`, `layout_analysis` |
+| **Multimodal** | `mm-vlm` | Vision-Language models *(stub)* | `image_caption`, `visual_qa`, `image_text_match` |
+| **Multimodal** | `mm-diffusion` | Image / video generation *(stub)* | `generate_image`, `img2img`, `inpaint` |
+| **Audio** | `audio-speech` | ASR, TTS, audio classification *(stub)* | `transcribe`, `synthesize_speech`, `classify_audio` |
+| **Training** | `train-hf` | Hugging Face Trainer & LoRA helpers *(stub)* | `prepare_dataset`, `train_lora`, `evaluate_model` |
+| **Inference** | `infer-local` | Local model serving (transformers / Ollama) | `list_local_models`, `generate`, `chat`, `stream_generate` |
+| **Inference** | `infer-api` | Unified multi-provider inference *(stub)* | `openai_chat`, `anthropic_chat`, `hf_inference` |
+| **Vector** | `vector-chroma` | ChromaDB vector store | `create_collection`, `add_documents`, `query`, `delete`, `collection_stats` |
+| **Vector** | `vector-faiss` | FAISS index management *(stub)* | `build_index`, `search`, `save_index` |
+| **Agents** | `agent-tools` | Agent orchestration helpers | `create_plan`, `tool_router`, `memory_store`, `memory_recall`, `reflect` |
+| **Data** | `data-prep` | Dataset loading & preprocessing | `load_hf_dataset`, `split_dataset`, `tokenize`, `filter_rows`, `export_dataset` |
+| **Utils** | `utils-metrics` | Evaluation metrics *(stub)* | `compute_bleu`, `compute_rouge`, `log_experiment` |
+| **Utils** | `utils-hf-hub` | Hugging Face Hub operations | `search_models`, `search_datasets`, `download_model`, `push_to_hub`, `repo_info` |
+
+**Fully implemented in this release**: NLP (text + embeddings), CV vision, Chroma vector, local inference, agent tools, data prep, HF Hub utils.
 
 ---
 
@@ -38,19 +41,20 @@ Connect any MCP-compatible host (Claude Desktop, Cursor, VS Code, ChatGPT, Gemin
 ```
 ai-ml-mcp-servers/
 ├── servers/
-│   ├── nlp/
-│   ├── cv/
-│   ├── multimodal/
-│   ├── audio/
-│   ├── training/
-│   ├── inference/
-│   ├── vector/
-│   ├── agents/
-│   ├── data/
-│   └── utils/
-├── configs/          # Claude Desktop / Cursor / VS Code configs
-├── docs/             # Architecture & contribution guides
-├── examples/         # End-to-end usage examples
+│   ├── nlp/           # text_analysis.py, embeddings.py
+│   ├── cv/            # vision.py
+│   ├── multimodal/    # (ready for vlm / diffusion)
+│   ├── audio/         # (ready for speech)
+│   ├── training/      # (ready for hf_trainer)
+│   ├── inference/     # local.py
+│   ├── vector/        # chroma.py
+│   ├── agents/        # tools.py
+│   ├── data/          # prep.py
+│   ├── utils/         # hf_hub.py
+│   └── common.py      # shared helpers
+├── configs/           # Claude Desktop / Cursor example configs
+├── docs/
+├── examples/
 ├── pyproject.toml
 └── README.md
 ```
@@ -62,33 +66,29 @@ ai-ml-mcp-servers/
 ### 1. Install
 
 ```bash
-pip install "mcp[cli]" huggingface_hub transformers torch pillow
-# or with uv
-uv add "mcp[cli]" huggingface_hub transformers torch pillow
+git clone https://github.com/NaTo1000/ai-ml-mcp-servers.git
+cd ai-ml-mcp-servers
+pip install -e ".[full]"   # or: uv pip install -e ".[full]"
 ```
 
-### 2. Run a server (stdio — for Claude Desktop / Cursor)
+Core dependencies are declared in `pyproject.toml`. Optional extras: `vision`, `audio`, `full`.
+
+### 2. Run a server (stdio — Claude Desktop / Cursor / VS Code)
 
 ```bash
 python -m servers.nlp.text_analysis
+python -m servers.nlp.embeddings
+python -m servers.cv.vision
+python -m servers.vector.chroma
+python -m servers.inference.local
+python -m servers.agents.tools
+python -m servers.data.prep
+python -m servers.utils.hf_hub
 ```
 
-### 3. Claude Desktop config (`claude_desktop_config.json`)
+### 3. Claude Desktop config
 
-```json
-{
-  "mcpServers": {
-    "nlp-text-analysis": {
-      "command": "python",
-      "args": ["-m", "servers.nlp.text_analysis"]
-    },
-    "cv-vision": {
-      "command": "python",
-      "args": ["-m", "servers.cv.vision"]
-    }
-  }
-}
-```
+Copy `configs/claude_desktop_config.example.json` into your Claude Desktop MCP settings and adjust paths / env vars as needed.
 
 ### 4. Streamable HTTP (remote / multi-client)
 
@@ -96,29 +96,38 @@ python -m servers.nlp.text_analysis
 python -m servers.nlp.text_analysis --transport streamable-http --port 8001
 ```
 
+(FastMCP supports the flag when using recent MCP SDK versions.)
+
 ---
 
 ## 🧩 Design Principles
 
-- **One concern per server** — easy to enable/disable
-- **Type-hinted tools** — automatic JSON Schema generation
-- **Docstring-driven** — descriptions come from Python docstrings
+- **One concern per server** — enable only what you need
+- **Type-hinted tools** — automatic JSON Schema
+- **Docstring-driven** — tool descriptions come from Python docstrings
 - **Graceful degradation** — works offline when models are cached
 - **Composable** — mix any combination of servers in one host
+- **Production defaults** — caching, device auto-detect, safe serialization
 
 ---
 
-## 🔗 Hugging Face
-
-This repository is designed to be mirrored / published on Hugging Face Spaces or as a model collection under **NaTo1000**.
+## 🔗 Publish to Hugging Face (NaTo1000)
 
 ```bash
-# After cloning
+# Login once
 huggingface-cli login
+
+# Create a Space (or model repo) under your account
 huggingface-cli repo create ai-ml-mcp-servers --type space --private false
+
+# Add remote and push
 git remote add hf https://huggingface.co/spaces/NaTo1000/ai-ml-mcp-servers
 git push hf main
 ```
+
+You can also turn any Gradio demo into an MCP endpoint by setting `mcp_server=True` in `launch()`.
+
+The official Hugging Face MCP server (`https://huggingface.co/mcp`) can then discover and call tools from your Space.
 
 ---
 
