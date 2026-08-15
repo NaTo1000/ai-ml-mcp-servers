@@ -1,1 +1,1 @@
-"""Vector database MCP servers."""
+"""Vector store MCP servers."""
