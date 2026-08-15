@@ -1,1 +1,67 @@
-# PLACEHOLDER
+[project]
+name = "ai-ml-mcp-servers"
+version = "1.1.0"
+description = "Full suite of production AI/ML Model Context Protocol (MCP) servers by NaTo1000 — tool sets for NLP, CV, Multimodal, Training, Inference, Vector DBs, Agents, Audio, and every major ML build type."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "NaTo1000", email = "Natfunkycat@yahoo.com.au" }
+]
+keywords = ["mcp", "model-context-protocol", "ai", "ml", "llm", "agents", "huggingface", "rag", "nlp", "computer-vision", "whisper", "lora"]
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "huggingface_hub>=0.26.0",
+    "transformers>=4.45.0",
+    "torch>=2.4.0",
+    "pillow>=10.0.0",
+    "numpy>=1.26.0",
+    "sentence-transformers>=3.0.0",
+    "chromadb>=0.5.0",
+    "datasets>=3.0.0",
+    "accelerate>=0.34.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+vision = ["torchvision", "opencv-python-headless"]
+audio = ["torchaudio", "openai-whisper", "soundfile", "librosa"]
+vector-extra = ["faiss-cpu>=1.8.0"]
+train = ["peft>=0.13.0", "evaluate>=0.4.0", "rouge_score", "sacrebleu"]
+full = [
+    "torchvision",
+    "opencv-python-headless",
+    "torchaudio",
+    "openai-whisper",
+    "soundfile",
+    "librosa",
+    "faiss-cpu>=1.8.0",
+    "peft>=0.13.0",
+    "evaluate>=0.4.0",
+    "rouge_score",
+    "sacrebleu",
+]
+
+[project.scripts]
+mcp-nlp-text = "servers.nlp.text_analysis:main"
+mcp-nlp-embed = "servers.nlp.embeddings:main"
+mcp-cv-vision = "servers.cv.vision:main"
+mcp-cv-ocr = "servers.cv.ocr:main"
+mcp-mm-vlm = "servers.multimodal.vlm:main"
+mcp-audio-speech = "servers.audio.speech:main"
+mcp-train-hf = "servers.training.hf_train:main"
+mcp-vector-chroma = "servers.vector.chroma:main"
+mcp-vector-faiss = "servers.vector.faiss_store:main"
+mcp-infer-local = "servers.inference.local:main"
+mcp-infer-api = "servers.inference.api:main"
+mcp-agent-tools = "servers.agents.tools:main"
+mcp-data-prep = "servers.data.prep:main"
+mcp-hf-hub = "servers.utils.hf_hub:main"
+mcp-metrics = "servers.utils.metrics:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["servers"]
