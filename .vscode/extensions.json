@@ -1,0 +1,43 @@
+{
+  // Recommended VS Code extensions for AI/ML MCP Servers development
+  "recommendations": [
+    // Python language support
+    "ms-python.python",
+    "ms-python.debugpy",
+    "ms-python.vscode-pylance",
+
+    // Linting / formatting
+    "charliermarsh.ruff",
+    "ms-python.mypy-type-checker",
+
+    // Testing
+    "littlefoxteam.vscode-python-test-adapter",
+    "hbenl.vscode-test-explorer",
+
+    // JSON / TOML editing
+    "tamasfe.even-better-toml",
+    "redhat.vscode-yaml",
+
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // Notebooks (useful for ML experimentation)
+    "ms-toolsai.jupyter",
+
+    // Docker (for containerised server deployment)
+    "ms-azuretools.vscode-docker",
+
+    // REST client (handy for manual MCP tool invocation)
+    "humao.rest-client",
+
+    // Markdown docs
+    "yzhang.markdown-all-in-one"
+  ],
+
+  // Extensions that conflict with the workspace tooling and should not be used
+  "unwantedRecommendations": [
+    "ms-python.pylint",
+    "ms-python.flake8"
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  // VS Code Tasks — Overlay Authority Build Control
+  //
+  // Every task that touches a build, test, install, or MCP server launch is
+  // routed through the Overlay Authority algorithm
+  // (servers/orchestration/build_authority.py) before execution.
+  //
+  // The authority performs three gates in sequence:
+  //   1. PROFILE GATE   — ensure the target server has a current profile in the
+  //                        orchestration registry.
+  //   2. SCORE GATE     — reject builds whose rated server scores fall below the
+  //                        configured governance threshold.
+  //   3. RESOURCE GATE  — abort if the requested build would exceed the workspace
+  //                        RAM / GPU budget declared in orchestration_config.json.
+  //
+  // Any gate failure writes a structured JSON rejection record to
+  // .vscode/authority_log.json and surfaces the reason in the VS Code task
+  // output panel.
+
+  "version": "2.0.0",
+
+  "inputs": [
+    {
+      "id": "serverTarget",
+      "type": "pickString",
+      "description": "Which MCP server to target?",
+      "options": [
+        "nlp-text", "nlp-embed",
+        "cv-vision", "cv-ocr",
+        "mm-vlm",
+        "audio-speech",
+        "train-hf",
+        "vector-chroma", "vector-faiss",
+        "infer-local", "infer-api",
+        "agent-tools",
+        "data-prep",
+        "hf-hub", "metrics",
+        "orchestrator",
+        "all"
+      ],
+      "default": "all"
+    },
+    {
+      "id": "extras",
+      "type": "pickString",
+      "description": "Optional dependency group to install?",
+      "options": ["none", "vision", "audio", "vector-extra", "train", "full"],
+      "default": "none"
+    }
+  ],
+
+  "tasks": [
+
+    // ── Authority: discover & rate all servers ────────────────────────────────
+    {
+      "label": "Authority: Discover & Rate All Servers",
+      "type": "shell",
+      "command": "python -m servers.orchestration.build_authority discover",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Authority: gate-check a specific server before any build ──────────────
+    {
+      "label": "Authority: Gate-Check Server",
+      "type": "shell",
+      "command": "python -m servers.orchestration.build_authority gate --server ${input:serverTarget}",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Authority: print governance report for the last workflow run ──────────
+    {
+      "label": "Authority: Governance Report",
+      "type": "shell",
+      "command": "python -m servers.orchestration.build_authority report",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Install: base dependencies ────────────────────────────────────────────
+    {
+      "label": "Install: Base Dependencies",
+      "type": "shell",
+      "command": "pip install -e .",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Install: optional extras ──────────────────────────────────────────────
+    {
+      "label": "Install: Optional Extras",
+      "type": "shell",
+      "command": "pip install -e '.[${input:extras}]'",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Install: full suite (all optional extras) ─────────────────────────────
+    {
+      "label": "Install: Full Suite",
+      "type": "shell",
+      "command": "pip install -e '.[full]'",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Build: authority-gated full install ───────────────────────────────────
+    // Runs the authority discover+rate pass FIRST; only proceeds to install if
+    // all gates pass.
+    {
+      "label": "Build: Authority-Gated Install",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Authority: Discover & Rate All Servers",
+        "Install: Full Suite"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+
+    // ── Run MCP server ────────────────────────────────────────────────────────
+    {
+      "label": "Run: MCP Server (authority-gated)",
+      "type": "shell",
+      "command": "python -m servers.orchestration.build_authority run --server ${input:serverTarget}",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Run orchestrator ──────────────────────────────────────────────────────
+    {
+      "label": "Run: Orchestrator MCP Server",
+      "type": "shell",
+      "command": "python -m servers.orchestration.server",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Lint ──────────────────────────────────────────────────────────────────
+    {
+      "label": "Lint: Ruff",
+      "type": "shell",
+      "command": "ruff check servers/",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": {
+        "owner": "ruff",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+):\\s+(\\w+)\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    },
+
+    // ── Type-check ────────────────────────────────────────────────────────────
+    {
+      "label": "Type-Check: Mypy",
+      "type": "shell",
+      "command": "mypy servers/ --ignore-missing-imports",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": "$mypy"
+    },
+
+    // ── Test ──────────────────────────────────────────────────────────────────
+    {
+      "label": "Test: Pytest",
+      "type": "shell",
+      "command": "pytest -v --tb=short",
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+
+    // ── Clean ─────────────────────────────────────────────────────────────────
+    {
+      "label": "Clean: pyc / __pycache__",
+      "type": "shell",
+      "command": "find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; find . -name '*.pyc' -delete; echo 'Cleaned.'",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    }
+  ]
+}

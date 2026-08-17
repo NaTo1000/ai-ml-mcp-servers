@@ -1,0 +1,265 @@
+{
+  // VS Code Launch Configurations — AI/ML MCP Servers
+  //
+  // Each configuration launches the corresponding MCP server in VS Code's
+  // integrated debugger.  The "preLaunchTask" for every server configuration
+  // runs the Overlay Authority gate-check so that a server can only be started
+  // under the debugger if it passes the three authority gates (profile, score,
+  // resource).
+
+  "version": "0.2.0",
+
+  "configurations": [
+
+    // ── Orchestrator ──────────────────────────────────────────────────────────
+    {
+      "name": "▶ Orchestrator MCP Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.orchestration.server",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ORCHESTRATION_CONFIG": "${workspaceFolder}/configs/orchestration_config.json"
+      }
+    },
+
+    // ── Build Authority (interactive CLI) ─────────────────────────────────────
+    {
+      "name": "▶ Build Authority — Discover & Rate",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.orchestration.build_authority",
+      "args": ["discover", "--verbose"],
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ORCHESTRATION_CONFIG": "${workspaceFolder}/configs/orchestration_config.json"
+      }
+    },
+
+    // ── NLP servers ───────────────────────────────────────────────────────────
+    {
+      "name": "▶ NLP — Text Analysis",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.nlp.text_analysis",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+    {
+      "name": "▶ NLP — Embeddings",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.nlp.embeddings",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── CV servers ────────────────────────────────────────────────────────────
+    {
+      "name": "▶ CV — Vision",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.cv.vision",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+    {
+      "name": "▶ CV — OCR",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.cv.ocr",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Multimodal ────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Multimodal — VLM",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.multimodal.vlm",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Audio ─────────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Audio — Speech",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.audio.speech",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Training ──────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Training — HuggingFace",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.training.hf_train",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "HF_TOKEN": "${env:HF_TOKEN}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Vector stores ─────────────────────────────────────────────────────────
+    {
+      "name": "▶ Vector — Chroma",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.vector.chroma",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+    {
+      "name": "▶ Vector — FAISS",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.vector.faiss_store",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Inference ─────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Inference — Local (Ollama)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.inference.local",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "OLLAMA_HOST": "http://localhost:11434"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+    {
+      "name": "▶ Inference — API",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.inference.api",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Agents ────────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Agents — Tools",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.agents.tools",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Data ──────────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Data — Prep",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.data.prep",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+
+    // ── Utils ─────────────────────────────────────────────────────────────────
+    {
+      "name": "▶ Utils — HuggingFace Hub",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.utils.hf_hub",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "HF_TOKEN": "${env:HF_TOKEN}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    },
+    {
+      "name": "▶ Utils — Metrics",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "servers.utils.metrics",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "preLaunchTask": "Authority: Gate-Check Server"
+    }
+  ],
+
+  // ── Compound configurations ───────────────────────────────────────────────
+  "compounds": [
+    {
+      "name": "▶▶ Full NLP Stack",
+      "configurations": ["▶ NLP — Text Analysis", "▶ NLP — Embeddings"],
+      "preLaunchTask": "Authority: Discover & Rate All Servers",
+      "stopAll": true
+    },
+    {
+      "name": "▶▶ Inference + Vector Stack",
+      "configurations": [
+        "▶ Inference — Local (Ollama)",
+        "▶ Vector — Chroma"
+      ],
+      "preLaunchTask": "Authority: Discover & Rate All Servers",
+      "stopAll": true
+    }
+  ]
+}
