@@ -58,6 +58,7 @@ mcp-agent-tools = "servers.agents.tools:main"
 mcp-data-prep = "servers.data.prep:main"
 mcp-hf-hub = "servers.utils.hf_hub:main"
 mcp-metrics = "servers.utils.metrics:main"
+mcp-orchestrator = "servers.orchestration.server:main"
 
 [build-system]
 requires = ["hatchling"]

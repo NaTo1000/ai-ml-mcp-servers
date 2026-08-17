@@ -1,0 +1,30 @@
+{
+  "_comment": "Orchestration MCP Server configuration. All paths are relative to the working directory unless absolute.",
+
+  "database": {
+    "path": "~/.local/share/ai-ml-mcp-servers/orchestration.db"
+  },
+
+  "discovery": {
+    "auto_discover_on_startup": true,
+    "pyproject_path": null
+  },
+
+  "rating": {
+    "weights": {
+      "tool_completeness": 0.30,
+      "reliability": 0.35,
+      "latency": 0.20,
+      "resource_efficiency": 0.10,
+      "governance_compliance": 0.05
+    },
+    "reschedule_after_n_invocations": 50
+  },
+
+  "governance": {
+    "min_score_threshold": 60.0,
+    "max_concurrent_servers": 4,
+    "max_total_ram_gb": 32.0,
+    "allow_unrated_servers": true
+  }
+}
