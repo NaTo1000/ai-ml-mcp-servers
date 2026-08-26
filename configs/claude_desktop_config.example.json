@@ -1,42 +1,74 @@
 {
   "mcpServers": {
-    "nlp-text-analysis": {
-      "command": "python",
-      "args": ["-m", "servers.nlp.text_analysis"]
+    "nlp-embed": {
+      "command": "mcp-nlp-embed",
+      "args": []
     },
-    "nlp-embeddings": {
-      "command": "python",
-      "args": ["-m", "servers.nlp.embeddings"]
-    },
-    "cv-vision": {
-      "command": "python",
-      "args": ["-m", "servers.cv.vision"]
+    "nlp-text": {
+      "command": "mcp-nlp-text",
+      "args": []
     },
     "vector-chroma": {
-      "command": "python",
-      "args": ["-m", "servers.vector.chroma"]
+      "command": "mcp-vector-chroma",
+      "args": [],
+      "env": {
+        "CHROMA_PERSIST_DIR": "./chroma_db"
+      }
+    },
+    "vector-faiss": {
+      "command": "mcp-vector-faiss",
+      "args": []
+    },
+    "cv-vision": {
+      "command": "mcp-cv-vision",
+      "args": []
+    },
+    "cv-ocr": {
+      "command": "mcp-cv-ocr",
+      "args": []
+    },
+    "mm-vlm": {
+      "command": "mcp-mm-vlm",
+      "args": []
+    },
+    "audio-speech": {
+      "command": "mcp-audio-speech",
+      "args": []
     },
     "infer-local": {
-      "command": "python",
-      "args": ["-m", "servers.inference.local"],
+      "command": "mcp-infer-local",
+      "args": []
+    },
+    "infer-api": {
+      "command": "mcp-infer-api",
+      "args": [],
       "env": {
-        "OLLAMA_HOST": "http://localhost:11434"
+        "HF_TOKEN": "your-hf-token",
+        "OPENAI_API_KEY": "optional"
       }
     },
-    "agent-tools": {
-      "command": "python",
-      "args": ["-m", "servers.agents.tools"]
+    "train-hf": {
+      "command": "mcp-train-hf",
+      "args": []
+    },
+    "hf-hub": {
+      "command": "mcp-hf-hub",
+      "args": [],
+      "env": {
+        "HF_TOKEN": "your-hf-token"
+      }
     },
     "data-prep": {
-      "command": "python",
-      "args": ["-m", "servers.data.prep"]
+      "command": "mcp-data-prep",
+      "args": []
     },
-    "utils-hf-hub": {
-      "command": "python",
-      "args": ["-m", "servers.utils.hf_hub"],
-      "env": {
-        "HF_TOKEN": "${HF_TOKEN}"
-      }
+    "agent-tools": {
+      "command": "mcp-agent-tools",
+      "args": []
+    },
+    "metrics": {
+      "command": "mcp-metrics",
+      "args": []
     }
   }
 }
