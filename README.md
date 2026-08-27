@@ -1,11 +1,12 @@
 # AI/ML MCP Servers by NaTo1000
 
-**Full production suite of Model Context Protocol (MCP) servers** specialized for every major AI/ML build type.
+**Complete production suite of Model Context Protocol (MCP) servers** for every major AI/ML build type.
 
-> USB-C for AI agents — plug any LLM (Claude, Cursor, VS Code, Windsurf, etc.) into real ML tools, models, datasets, vector stores, training loops, multimodal pipelines, speech, and more.
+> USB-C for AI agents — plug any LLM (Claude, Cursor, VS Code, Windsurf, Codex, etc.) into real ML tools, models, datasets, vector stores, training loops, multimodal pipelines, speech, tabular ML, diffusion, code intelligence, time-series, graphs, RL, and more.
 
 **GitHub:** https://github.com/NaTo1000/ai-ml-mcp-servers  
-**Author:** NaTo1000 (BPB BLUEPRINTBOT PTY LTD) — Melbourne
+**Hugging Face:** https://huggingface.co/NaTo1000/ai-ml-mcp-servers (Space / source mirror)  
+**Author:** NaTo1000 (BPB BLUEPRINTBOT PTY LTD) — Melbourne · infinite2025.com
 
 ---
 
@@ -16,7 +17,7 @@ git clone https://github.com/NaTo1000/ai-ml-mcp-servers.git
 cd ai-ml-mcp-servers
 pip install -e ".[full]"
 
-# Run any server (stdio)
+# Core entry points (stdio)
 mcp-nlp-embed
 mcp-nlp-text
 mcp-vector-chroma
@@ -32,73 +33,109 @@ mcp-hf-hub
 mcp-data-prep
 mcp-agent-tools
 mcp-metrics
+mcp-tabular
+mcp-diffusion
+mcp-code-intel
+mcp-timeseries
+mcp-graph
+mcp-rl
 ```
 
-Claude Desktop / Cursor example config → `configs/claude_desktop_config.example.json`
+Claude Desktop / Cursor / VS Code example → `configs/claude_desktop_config.example.json`
 
 ---
 
-## Complete Tool-Set Catalog — All Build Types
+## Full Tool-Set Catalog — All Build Types
 
 ### 1. Core Infrastructure & Model Hub
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Hugging Face Hub** | `mcp-hf-hub` | `search_models`, `search_datasets`, `get_model_info`, `list_spaces`, `whoami` |
-| **Local Inference** | `mcp-infer-local` | `load_model`, `generate`, `chat`, `list_loaded_models` |
-| **API / Cloud Inference** | `mcp-infer-api` | `openai_chat`, `hf_inference`, `generic_http_infer` |
-| **Embeddings** | `mcp-nlp-embed` | `embed_text`, `batch_embed`, `cosine_similarity`, `semantic_search` |
+| **Hugging Face Hub** | `mcp-hf-hub` | `search_models`, `search_datasets`, `get_model_info`, `list_spaces`, `download_model`, `whoami`, `list_files` |
+| **Local Inference** | `mcp-infer-local` | `load_model`, `generate`, `chat`, `list_loaded_models`, `unload_model`, `estimate_memory` |
+| **API / Cloud Inference** | `mcp-infer-api` | `openai_chat`, `hf_inference`, `generic_http_infer`, `list_providers` |
+| **Embeddings** | `mcp-nlp-embed` | `embed_text`, `batch_embed`, `cosine_similarity`, `semantic_search`, `list_embedding_models` |
 
 ### 2. Vector Stores & RAG
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Chroma** | `mcp-vector-chroma` | `create_collection`, `add_documents`, `query_collection`, `list_collections`, `delete_collection` |
-| **FAISS** | `mcp-vector-faiss` | `create_index`, `add_vectors`, `search`, `save_index`, `load_index` |
+| **Chroma** | `mcp-vector-chroma` | `create_collection`, `add_documents`, `query_collection`, `list_collections`, `delete_collection`, `update_documents`, `get_collection_stats` |
+| **FAISS** | `mcp-vector-faiss` | `create_index`, `add_vectors`, `search`, `save_index`, `load_index`, `index_info` |
 
 ### 3. NLP & Text Intelligence
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Text Analysis** | `mcp-nlp-text` | `classify_text`, `extract_entities`, `sentiment_analysis`, `summarize`, `extract_keywords` |
+| **Text Analysis** | `mcp-nlp-text` | `classify_text`, `extract_entities`, `sentiment_analysis`, `summarize`, `extract_keywords`, `translate`, `zero_shot_classify` |
 | **Embeddings** | `mcp-nlp-embed` | (see above) |
 
 ### 4. Computer Vision
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Vision Models** | `mcp-cv-vision` | `classify_image`, `detect_objects`, `caption_image`, `zero_shot_classify` |
-| **OCR & Documents** | `mcp-cv-ocr` | `ocr_image`, `ocr_pdf_page`, `extract_text_blocks` |
+| **Vision Models** | `mcp-cv-vision` | `classify_image`, `detect_objects`, `caption_image`, `zero_shot_classify`, `segment_image`, `feature_extract` |
+| **OCR & Documents** | `mcp-cv-ocr` | `ocr_image`, `ocr_pdf_page`, `extract_text_blocks`, `table_extract` |
 
 ### 5. Multimodal (Vision-Language)
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **VLM** | `mcp-mm-vlm` | `image_qa`, `describe_scene`, `vlm_query` |
+| **VLM** | `mcp-mm-vlm` | `image_qa`, `describe_scene`, `vlm_query`, `visual_grounding` |
 
 ### 6. Audio & Speech
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Speech (Whisper)** | `mcp-audio-speech` | `transcribe`, `detect_language`, `list_whisper_models` |
+| **Speech (Whisper)** | `mcp-audio-speech` | `transcribe`, `detect_language`, `list_whisper_models`, `transcribe_timestamps`, `align_audio` |
 
 ### 7. Training, Fine-Tuning & PEFT
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **HF Training / LoRA** | `mcp-train-hf` | `create_lora_config`, `prepare_sft_dataset`, `estimate_train_memory`, `merge_lora_adapter` |
+| **HF Training / LoRA** | `mcp-train-hf` | `create_lora_config`, `prepare_sft_dataset`, `estimate_train_memory`, `merge_lora_adapter`, `list_peft_methods`, `get_trainer_template` |
 
 ### 8. Data Engineering
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Dataset Prep** | `mcp-data-prep` | `load_dataset`, `split_dataset`, `list_loaded` |
+| **Dataset Prep** | `mcp-data-prep` | `load_dataset`, `split_dataset`, `list_loaded`, `filter_dataset`, `map_dataset`, `push_to_hub` |
 
 ### 9. Evaluation & Metrics
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Metrics** | `mcp-metrics` | `compute_accuracy`, `compute_bleu`, `compute_rouge`, `classification_report_simple`, `measure_latency` |
+| **Metrics** | `mcp-metrics` | `compute_accuracy`, `compute_bleu`, `compute_rouge`, `classification_report_simple`, `measure_latency`, `compute_f1`, `compute_perplexity` |
 
 ### 10. Agents & Orchestration
 | Tool Set | Entry Point | Key Tools |
 |----------|-------------|-----------|
-| **Agent Primitives** | `mcp-agent-tools` | `memory_write`, `memory_read`, `memory_list`, `add_note`, `list_notes`, `clear_memory` |
+| **Agent Primitives** | `mcp-agent-tools` | `memory_write`, `memory_read`, `memory_list`, `add_note`, `list_notes`, `clear_memory`, `tool_trace` |
 
-### 11. Supporting / Cross-Cutting (recommended official + community)
-- Filesystem, Git, GitHub, Postgres, Time, Memory (official MCP reference servers)
-- Browser automation, web search, Slack, Notion, etc.
+### 11. Tabular / Classic ML
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **Tabular ML** | `mcp-tabular` | `load_csv`, `describe_data`, `train_classifier`, `train_regressor`, `predict`, `feature_importance`, `cross_validate` |
+
+### 12. Generative / Diffusion
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **Diffusion** | `mcp-diffusion` | `list_diffusers`, `text2img_info`, `img2img_info`, `estimate_vram`, `pipeline_template` |
+
+### 13. Code Intelligence
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **Code Intel** | `mcp-code-intel` | `embed_code`, `semantic_code_search`, `summarize_function`, `detect_language`, `extract_imports` |
+
+### 14. Time-Series
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **Time-Series** | `mcp-timeseries` | `load_series`, `forecast_naive`, `rolling_stats`, `detect_anomalies`, `resample` |
+
+### 15. Graph / Knowledge
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **Graph Tools** | `mcp-graph` | `create_graph`, `add_nodes`, `add_edges`, `query_neighbors`, `shortest_path`, `export_graph` |
+
+### 16. Reinforcement Learning
+| Tool Set | Entry Point | Key Tools |
+|----------|-------------|-----------|
+| **RL Helpers** | `mcp-rl` | `list_gym_envs`, `env_info`, `create_rollout_template`, `compute_returns`, `policy_eval_template` |
+
+### 17. Supporting / Cross-Cutting (recommended)
+- Official MCP reference: Filesystem, Git, GitHub, Postgres, Time, Memory, Fetch, Sequential Thinking
+- Browser automation, web search, Slack, Notion, Sentry, Docker, Kubernetes, AWS/Azure MCP servers
 
 ---
 
@@ -106,14 +143,20 @@ Claude Desktop / Cursor example config → `configs/claude_desktop_config.exampl
 
 | Build Type | Recommended Servers |
 |------------|---------------------|
-| **RAG / Knowledge** | `mcp-nlp-embed` + `mcp-vector-chroma` (or faiss) + `mcp-hf-hub` + `mcp-data-prep` |
+| **RAG / Knowledge Base** | `mcp-nlp-embed` + `mcp-vector-chroma` (or faiss) + `mcp-hf-hub` + `mcp-data-prep` + `mcp-agent-tools` |
 | **Chat / Local LLM** | `mcp-infer-local` + `mcp-agent-tools` + `mcp-hf-hub` |
 | **Cloud Agent** | `mcp-infer-api` + `mcp-agent-tools` + `mcp-hf-hub` |
-| **Fine-Tune / LoRA** | `mcp-train-hf` + `mcp-data-prep` + `mcp-metrics` + `mcp-hf-hub` |
+| **Fine-Tune / LoRA / PEFT** | `mcp-train-hf` + `mcp-data-prep` + `mcp-metrics` + `mcp-hf-hub` |
 | **Computer Vision App** | `mcp-cv-vision` + `mcp-cv-ocr` + `mcp-mm-vlm` |
-| **Speech / Voice** | `mcp-audio-speech` + `mcp-infer-api` (for TTS providers) |
+| **Speech / Voice Agent** | `mcp-audio-speech` + `mcp-infer-api` (TTS) |
 | **Multimodal Agent** | `mcp-mm-vlm` + `mcp-cv-vision` + `mcp-nlp-text` + `mcp-agent-tools` |
-| **Full MLOps Loop** | All of the above + official GitHub / Filesystem / Postgres MCP servers |
+| **Tabular / AutoML** | `mcp-tabular` + `mcp-data-prep` + `mcp-metrics` |
+| **Image Generation** | `mcp-diffusion` + `mcp-hf-hub` + `mcp-cv-vision` |
+| **Code Assistant** | `mcp-code-intel` + `mcp-nlp-embed` + `mcp-infer-local` + official GitHub MCP |
+| **Time-Series Forecasting** | `mcp-timeseries` + `mcp-tabular` + `mcp-metrics` |
+| **Knowledge Graph RAG** | `mcp-graph` + `mcp-vector-chroma` + `mcp-nlp-embed` |
+| **RL / Agents** | `mcp-rl` + `mcp-agent-tools` + `mcp-metrics` |
+| **Full MLOps Loop** | All of the above + official GitHub / Filesystem / Postgres / Docker MCP servers |
 
 ---
 
@@ -123,31 +166,22 @@ Claude Desktop / Cursor example config → `configs/claude_desktop_config.exampl
 ai-ml-mcp-servers/
 ├── servers/
 │   ├── common.py
-│   ├── nlp/
-│   │   ├── embeddings.py
-│   │   └── text_analysis.py
-│   ├── cv/
-│   │   ├── vision.py
-│   │   └── ocr.py
-│   ├── multimodal/
-│   │   └── vlm.py
-│   ├── audio/
-│   │   └── speech.py
-│   ├── training/
-│   │   └── hf_train.py
-│   ├── inference/
-│   │   ├── local.py
-│   │   └── api.py
-│   ├── vector/
-│   │   ├── chroma.py
-│   │   └── faiss_store.py
-│   ├── data/
-│   │   └── prep.py
-│   ├── agents/
-│   │   └── tools.py
-│   └── utils/
-│       ├── hf_hub.py
-│       └── metrics.py
+│   ├── nlp/          # embeddings, text_analysis
+│   ├── cv/           # vision, ocr
+│   ├── multimodal/   # vlm
+│   ├── audio/        # speech
+│   ├── training/     # hf_train
+│   ├── inference/    # local, api
+│   ├── vector/       # chroma, faiss_store
+│   ├── data/         # prep
+│   ├── agents/       # tools
+│   ├── utils/        # hf_hub, metrics
+│   ├── tabular/      # classic ML
+│   ├── diffusion/    # generative image
+│   ├── code/         # code intelligence
+│   ├── timeseries/   # forecasting & anomalies
+│   ├── graph/        # knowledge graphs
+│   └── rl/           # reinforcement learning helpers
 ├── configs/
 │   └── claude_desktop_config.example.json
 ├── scripts/
@@ -162,19 +196,19 @@ ai-ml-mcp-servers/
 
 ```bash
 pip install huggingface_hub
-huggingface-cli login          # use a token with write scope
-python scripts/push_to_hf.py   # creates/updates NaTo1000/ai-ml-mcp-servers Space or dataset repo
+huggingface-cli login          # write-scoped token
+export HF_TOKEN=hf_...
+python scripts/push_to_hf.py   # creates/updates NaTo1000/ai-ml-mcp-servers
 ```
 
-Or manually:
+Or:
 
 ```bash
 huggingface-cli repo create ai-ml-mcp-servers --type space --private false
-git remote add hf https://huggingface.co/spaces/NaTo1000/ai-ml-mcp-servers
-git push hf main
+# then upload via the script or git remote
 ```
 
-The suite is also fully compatible with the official Hugging Face MCP server at https://huggingface.co/mcp.
+Compatible with the official Hugging Face MCP server: https://huggingface.co/mcp
 
 ---
 
@@ -182,10 +216,11 @@ The suite is also fully compatible with the official Hugging Face MCP server at 
 
 | Variable | Used By | Purpose |
 |----------|---------|---------|
-| `HF_TOKEN` | hf-hub, inference-api, training | Auth for Hub + Inference API |
-| `OPENAI_API_KEY` | inference-api | OpenAI or compatible providers |
-| `OPENAI_API_BASE` | inference-api | Custom base URL (Groq, Together, vLLM…) |
-| `CHROMA_PERSIST_DIR` | vector-chroma | Where Chroma stores data (default `./chroma_db`) |
+| `HF_TOKEN` | hf-hub, inference-api, training, data-prep | Hub + Inference auth |
+| `OPENAI_API_KEY` | inference-api | OpenAI-compatible providers |
+| `OPENAI_API_BASE` | inference-api | Custom base (Groq, Together, vLLM, Ollama…) |
+| `CHROMA_PERSIST_DIR` | vector-chroma | Persistent storage (default `./chroma_db`) |
+| `DEVICE` | most servers | Force `cpu` / `cuda` / `mps` |
 
 ---
 
@@ -193,4 +228,4 @@ The suite is also fully compatible with the official Hugging Face MCP server at 
 
 MIT — free for commercial and personal use.
 
-Built and maintained by **NaTo1000** · BPB BLUEPRINTBOT PTY LTD · Melbourne
+Built and maintained by **NaTo1000** · BPB BLUEPRINTBOT PTY LTD · Melbourne · infinite2025.com
