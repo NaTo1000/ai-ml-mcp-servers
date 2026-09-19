@@ -5,6 +5,7 @@ Load Hugging Face / local transformers models and run generation / chat.
 
 from __future__ import annotations
 
+import gc
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -52,6 +53,7 @@ def load_model(model_id: str = "gpt2", device: Optional[str] = None) -> str:
         "model_id": model_id,
         "device": str(next(model.parameters()).device),
         "vocab_size": tokenizer.vocab_size,
+        "parameters": int(sum(p.numel() for p in model.parameters())),
     })
 
 
@@ -113,6 +115,57 @@ def list_loaded_models() -> str:
         device = str(next(model.parameters()).device)
         info.append({"model_id": mid, "device": device})
     return safe_json({"loaded": info})
+
+
+@mcp.tool()
+def unload_model(model_id: str) -> str:
+    """Unload a previously loaded model and tokenizer from memory."""
+    if model_id not in _models:
+        return safe_json({"error": f"Model '{model_id}' not found"})
+    del _models[model_id]
+    _tokenizers.pop(model_id, None)
+    gc.collect()
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except Exception:
+        pass
+    return safe_json({"status": "unloaded", "model_id": model_id})
+
+
+@mcp.tool()
+def estimate_memory(
+    model_id: str = "gpt2",
+    seq_len: int = 2048,
+    batch_size: int = 1,
+    dtype: str = "auto",
+) -> str:
+    """Estimate rough inference memory needs without fully loading the model."""
+    try:
+        from transformers import AutoConfig
+
+        cfg = AutoConfig.from_pretrained(model_id)
+        hidden = getattr(cfg, "hidden_size", 768)
+        layers = getattr(cfg, "num_hidden_layers", 12)
+        vocab = getattr(cfg, "vocab_size", 50257)
+        params = layers * 12 * hidden * hidden + vocab * hidden
+        resolved_dtype = "float16" if dtype == "auto" and get_device() != "cpu" else ("float32" if dtype == "auto" else dtype)
+        bytes_per_param = {"float32": 4, "float16": 2, "bfloat16": 2, "int8": 1}.get(resolved_dtype, 4)
+        weights_gb = params * bytes_per_param / 1e9
+        activations_gb = batch_size * seq_len * hidden * layers * bytes_per_param / 1e9
+        total_gb = weights_gb + activations_gb + 0.5
+        return safe_json({
+            "model_id": model_id,
+            "dtype": resolved_dtype,
+            "approx_parameters": int(params),
+            "estimated_weight_memory_gb": round(weights_gb, 2),
+            "estimated_activation_memory_gb": round(activations_gb, 2),
+            "estimated_total_memory_gb": round(total_gb, 2),
+        })
+    except Exception as e:
+        return safe_json({"error": str(e), "model_id": model_id})
 
 
 def main():

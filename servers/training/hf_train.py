@@ -50,6 +50,12 @@ def prepare_sft_dataset(
     from datasets import load_dataset
 
     ds = load_dataset(dataset_id, split=split)
+    if text_field not in ds.column_names:
+        return safe_json({
+            "error": f"Field '{text_field}' not found",
+            "available_columns": ds.column_names,
+            "dataset_id": dataset_id,
+        })
     if max_samples and len(ds) > max_samples:
         ds = ds.select(range(max_samples))
     sample = [dict(r) for r in ds.select(range(min(3, len(ds))))]
@@ -61,6 +67,96 @@ def prepare_sft_dataset(
         "sample": sample,
         "hint": "Use this with your training script or transformers Trainer",
     })
+
+
+@mcp.tool()
+def list_peft_methods() -> str:
+    """List common PEFT / fine-tuning strategies and when to use them."""
+    methods = [
+        {
+            "name": "LoRA",
+            "best_for": ["causal-lm", "seq2seq", "vision-language"],
+            "strengths": ["low memory", "simple merge", "wide ecosystem support"],
+        },
+        {
+            "name": "QLoRA",
+            "best_for": ["large language models", "single-GPU fine-tuning"],
+            "strengths": ["4-bit base weights", "very low VRAM", "good quality/cost tradeoff"],
+        },
+        {
+            "name": "Prefix Tuning",
+            "best_for": ["generation tasks", "small adaptation footprint"],
+            "strengths": ["few trainable params", "keeps base frozen"],
+        },
+        {
+            "name": "Prompt Tuning",
+            "best_for": ["classification", "instruction adaptation"],
+            "strengths": ["smallest parameter footprint", "fast experiments"],
+        },
+        {
+            "name": "Full Fine-Tune",
+            "best_for": ["small models", "maximum adaptation quality"],
+            "strengths": ["highest ceiling", "full control"],
+            "tradeoffs": ["highest memory and compute cost"],
+        },
+    ]
+    return safe_json({"methods": methods})
+
+
+@mcp.tool()
+def get_trainer_template(
+    task: str = "sft",
+    use_lora: bool = True,
+    learning_rate: float = 2e-4,
+    epochs: int = 3,
+    per_device_batch_size: int = 4,
+) -> str:
+    """Return a practical trainer configuration template for common fine-tuning tasks."""
+    task = task.lower()
+    task_presets = {
+        "sft": {
+            "trainer": "transformers.Trainer",
+            "dataset_expectation": "one text field containing the full prompt/response transcript",
+            "max_seq_length": 2048,
+        },
+        "classification": {
+            "trainer": "transformers.Trainer",
+            "dataset_expectation": "text plus label columns",
+            "max_seq_length": 512,
+        },
+        "seq2seq": {
+            "trainer": "transformers.Seq2SeqTrainer",
+            "dataset_expectation": "input text plus target text columns",
+            "max_seq_length": 1024,
+        },
+    }
+    preset = task_presets.get(task, task_presets["sft"])
+    template = {
+        "task": task,
+        "trainer": preset["trainer"],
+        "dataset_expectation": preset["dataset_expectation"],
+        "training_arguments": {
+            "learning_rate": learning_rate,
+            "num_train_epochs": epochs,
+            "per_device_train_batch_size": per_device_batch_size,
+            "per_device_eval_batch_size": per_device_batch_size,
+            "gradient_accumulation_steps": 4,
+            "warmup_ratio": 0.03,
+            "weight_decay": 0.01,
+            "logging_steps": 10,
+            "save_strategy": "epoch",
+            "evaluation_strategy": "epoch",
+            "fp16": get_device() == "cuda",
+            "bf16": False,
+            "report_to": [],
+        },
+        "modeling": {
+            "use_lora": use_lora,
+            "suggested_target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"] if use_lora else [],
+            "max_seq_length": preset["max_seq_length"],
+        },
+    }
+    return safe_json(template)
 
 
 @mcp.tool()
